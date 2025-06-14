@@ -198,17 +198,11 @@ The `describe()` function formats values to improve test output:
 
 Use Swift Package Manager:
 
-```swift
-dependencies: [
-    .package(url: "https://github.com/jonreid/FailKit.git", from: "1.0.0")
-]
-```
+<!-- snippet: dependency-declaration -->
 
 And in your target:
 
-```swift
-dependencies: ["FailKit"]
-```
+<!-- snippet: dependency-use -->
 
 ## About the Author
 
