@@ -7,12 +7,12 @@ import Testing
 
 final class MessageSuffixTests: @unchecked Sendable {
     @Test
-    func noMessage() throws {
-        #expect(messageSuffix(nil) == "")
+    func emptyMessage() throws {
+        #expect(messageSuffix("") == "")
     }
     
     @Test
-    func message() throws {
+    func addsSeparator() throws {
         #expect(messageSuffix("message") == " - message")
     }
 }
