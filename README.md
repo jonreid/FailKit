@@ -22,6 +22,7 @@ XCTest uses `XCTFail`. Swift Testing uses `Issue.record`. You can’t just call 
       * [✅ Success Case (No Failure)](#-success-case-no-failure)
       * [❌ Failure Case (Should Fail)](#-failure-case-should-fail)
   * [`describe` Details](#describe-details)
+  * [💡 See a Working Example](#-see-a-working-example)
   * [Installation](#installation)
   * [About the Author](#about-the-author)<!-- endToc -->
 
@@ -208,11 +209,23 @@ It’s a complete, working example you can use as a starting point for your own 
 Use Swift Package Manager:
 
 <!-- snippet: dependency-declaration -->
+<a id='snippet-dependency-declaration'></a>
+```swift
+dependencies: [
+    .package(url: "https://github.com/jonreid/FailKit.git", from: "1.0.0"),
+],
+```
+<sup><a href='/Demo/Package.swift#L13-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-dependency-declaration' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 And in your target:
 
 <!-- snippet: dependency-use -->
+<a id='snippet-dependency-use'></a>
+```swift
+dependencies: ["FailKit"]
+```
+<sup><a href='/Demo/Package.swift#L21-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-dependency-use' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## About the Author
