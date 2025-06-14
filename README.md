@@ -2,9 +2,11 @@
 
 [![Build](https://github.com/jonreid/FailKit/actions/workflows/build.yml/badge.svg)](https://github.com/jonreid/FailKit/actions/workflows/build.yml)
 
-Most projects should include custom test assertions to make tests more expressive and easier to write.
+Writing custom test assertions makes your tests more expressive and easier to maintain.
 
-But when you write custom test assertions, how can you support both XCTest and Swift Testing? You can write them twice (with different names). Or you can use FailKit.
+But how do you support both **XCTest** and **Swift Testing?**
+
+XCTest uses `XCTFail`. Swift Testing uses `Issue.record`. You can’t just call one from the other. You could write your assertions twice — or use **FailKit.**
 
 <!-- toc -->
 ## Contents
@@ -22,25 +24,22 @@ But when you write custom test assertions, how can you support both XCTest and S
 
 ## Features
 
-- **Test Failures**: Report failures consistently across testing frameworks
-  - Works with both Swift Testing and XCTest
-  - Includes source location information
+- **Unified Failure Reporting
+**:  
+Works with **XCTest** and **Swift Testing,** including source location.
 
-- **Value Description**: Format values to make failure messages easier to read
-  - Optional values are described without the `Optional(…)` wrapper
-  - Strings are quoted and show escaped special characters
+- **Cleaner Value Descriptions
+**:  
+Optional values without `Optional(…)`; strings quoted and escaped.
 
-- **Test Your Assertions**: Test your assertion helpers with `FailSpy`
-  - Confirm whether it reports a failure
-  - Test the contents of the failure message
+- **Assertion Testing**:  
+Use `FailSpy` to test your custom assertions: did they fail, and how?
 
 ## Usage
 
 ### Fail.fail
 
-Let’s say we want an equality assertion that improves on `XCTestAssertEqual` by identifying the expected value vs. the actual value.
-
-One ordinarily writes an XCTest assertion by calling `XCTFail`:
+Let’s say we want a custom equality assertion that’s clearer than `XCTestAssertEqual`:
 
 ```swift
 func assertEqual<T: Equatable>(
@@ -54,11 +53,9 @@ func assertEqual<T: Equatable>(
 }
 ```
 
-Note that we pass the location of the call site down to `XCTFail` so it reports the location correctly.
+This works — until you start migrating to Swift Testing. You’ll need to duplicate the function, rename it, and re-implement the failure logic.
 
-This works pretty well. We use it across several tests. But now, we want to migrate those tests from XCTest to Swift Testing. We can copy our assertion function and rework it for Swift Testing.  But this migration will take some time because we have many tests. So we have to give the duplicate function a slightly different name.
-
-Or we use FailKit instead:
+With **FailKit,** you can write one assertion that works in both worlds:
 
 ```swift
 func assertEqual<T: Equatable>(
@@ -77,43 +74,44 @@ func assertEqual<T: Equatable>(
 }
 ```
 
-`Fail.fail(message:location:)` does the work of routing the failure to either XCTest or Swift Testing. Note the change in location parameters and how we pass them into `Fail`.
+`Fail.fail` automatically routes to the appropriate testing framework.
 
-### Describe Values
+### Better Value Descriptions with `describe`
 
-In our example, the message is
+Consider this failure message:
 
 ```swift
 "Expected \(expected), but was \(actual)"
 ```
 
-It converts the `expected` and `actual` values into strings. Here are some examples of different string conversions, depending on the original type:
+Depending on the type, the results may be unclear:
 
-| Type   | Swift conversion                              |
-| ------ | --------------------------------------------- |
-| Int    | Expected 123, but was 456                     |
-| Int?   | Expected Optional(123), but was Optional(456) |
-| String | Expected ab cd, but was de fg                 |
 
-The integer is fine. But the optional integer is noisy in test output. When reporting differences in values, we want the boxed values. Our brains have to strip out the Optional(…) wrappers to find the parts we care about.
-
-The string doesn’t look like a string. This makes it hard to distinguish spaces. And any special characters, like tab and newline, are converted into empty spaces.
-
-We can improve value descriptions in test messages by calling FailKit’s `describe` function.
-
-```swift
-"Expected \(describe(expected)), but was \(describe(actual))"
-```
-
-| Type   | Swift conversion                              | FailKit describe()                |
+| Type   | Without FailKit                               | With `describe()`                 |
 | ------ | --------------------------------------------- | --------------------------------- |
 | Int    | Expected 123, but was 456                     | Expected 123, but was 456         |
 | Int?   | Expected Optional(123), but was Optional(456) | Expected 123, but was 456         |
 | String | Expected ab cd, but was de fg                 | Expected "ab cd", but was "de fg" |
 
-A string with a tab will look like `"ab\tcd"`, just as we’d write it in a string literal. Now we can distinguish special characters from spaces.
+Improve this by using:
+
+```swift
+"Expected \(describe(expected)), but was (describe(actual))"
+```
+
+Optional values are unwrapped. Strings are quoted and escaped, making special characters visible.
 
 ### Add a Distinguishing Message
+
+When a test has multiple assertions, it helps to add a short distinguishing message:
+
+```swift
+let result = 6 * 9
+assertEqual(result, 42, "answer to the ultimate question")
+```
+
+To support this, add a `message` parameter with a default:
+
 
 When a test has multiple assertions, it’s often helpful to add a distinguishing message. This helps us identify the point of failure even from raw console output, as you get from a build server.
 
@@ -123,65 +121,40 @@ To separate this distinguishing message from the main message, use FailKit’s `
 func assertEqual<T: Equatable>(
     _ actual: T,
     expected: T,
-    message: String = "", // 👈 like this
-    fileID: String = #fileID,
-    filePath: StaticString = #filePath,
-    line: UInt = #line,
-    column: UInt = #column
+    message: String = "",
+    ...
 )
 ```
 
-Concatenate `messageSuffix(message)` to your failure message:
+And append it using `messageSuffix`:
 
 ```swift
 "Expected \(expected), but was \(actual)" + messageSuffix(message)
 ```
 
-When the distinguishing message is non-empty, `messageSuffix` adds a separator. So for this assertion,
-
-```swift
-let result = 6 * 9
-assertEqual(result, 42, "answer to the ultimate question")
-```
-
-the output will be,
+FailKit will insert a separator if the message is non-empty:
 
 > Expected 42, but was 54 - answer to the ultimate question
 
 
-### Testing Your Assertion Helpers
+### Test Your Custom Assertions
 
-Finally, what if you want to release your assertion helper in its own module? It should have its own tests. How do you test:
-
-- when it succeeds?
-- when it fails?
-- different failure messages it reports?
-
-To do that, add an `any Failing` parameter with `Fail()` as the default value.
+You can test your assertion helpers using `FailSpy`. First, modify your function to take a `Failing` parameter:
 
 ```swift
 func assertEqual<T: Equatable>(
     _ actual: T,
     expected: T,
-    message: String = "",
-    fileID: String = #fileID,
-    filePath: StaticString = #filePath,
-    line: UInt = #line,
-    column: UInt = #column,
-    failure: any Failing = Fail() // 👈 like this
+    ...,
+    failure: any Failing = Fail()
 )
 ```
 
-In the body of your assertion, replace the call to `Fail.fail` with `failure.fail`:
+Then, call `failure.fail(…)` instead of `Fail.fail(…)`.
 
-```swift
-failure.fail( // 👈 like this
-    message: "Expected \(describe(expected)), but was \(describe(actual))" + messageSuffix(message),
-    location: SourceLocation(fileID: fileID, filePath: filePath, line: line, column: column)
-)
-```
+To test it:
 
-To test this, create a `FailSpy` and inject it. To test a passing scenario, the spy’s `callCount` should be 0.
+#### ✅ Success Case (No Failure)
 
 ```swift
 @Test
@@ -194,7 +167,7 @@ func equal() async throws {
 }
 ```
 
-To test a failing scenario, confirm that the `callCount` is 1 and check the first value in `messages`.
+#### ❌ Failure Case (Should Fail)
 
 ```swift
 @Test
@@ -208,28 +181,21 @@ func mismatch() async throws {
 }
 ```
 
-With this knowledge, you can now TDD your custom assertions!
+You can now test your own test helpers — and TDD them, too.
 
-## Describe Value Details
+## `describe` Details
 
-FailKit’s `describe` function converts values for ease of reading in test failures.
+The `describe()` function formats values to improve test output:
 
-If the value is optional, it removes the `Optional(…)` wrapper.
+- **Optionals:** Removes `Optional(…)` wrapper
+- **Strings:** Adds quotes and escapes
+	- `\\"` (quote)
+	- `\n`, `\r`, `\t` (newline, carriage return, tab)
+- **Other types:** Use default Swift description
 
-If the value is a string, it’s shown in double quotes with the following characters represented as escaped special characters:
+## Installation
 
-- \\" (double quotation mark)
-- \n (line feed)
-- \r (carriage return)
-- \t (horizontal tab)
-
-Other types of values use normal Swift conversion.
-
-## How to Install
-
-### Swift Package Manager
-
-If you have a `Package.swift` file, declare the following dependency:
+Use Swift Package Manager:
 
 ```swift
 dependencies: [
@@ -237,15 +203,15 @@ dependencies: [
 ]
 ```
 
-Then add it to the appropriate target:
+And in your target:
 
 ```swift
 dependencies: ["FailKit"]
 ```
 
-## Author
+## About the Author
 
-Jon Reid is the author of _[iOS Unit Testing by Example](https://iosunittestingbyexample.com)._ His website is [Quality Coding](https://qualitycoding.org).
+Jon Reid is the author of _[iOS Unit Testing by Example](https://iosunittestingbyexample.com)._ Find more at [Quality Coding](https://qualitycoding.org).
 
 [![Bluesky](https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff)](https://bsky.app/profile/qualitycoding.org)
 [![Mastodon](https://img.shields.io/mastodon/follow/109765011064804734?domain=https%3A%2F%2Fiosdev.space
