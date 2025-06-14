@@ -208,10 +208,12 @@ It’s a complete, working example you can use as a starting point for your own 
 Use Swift Package Manager:
 
 <!-- snippet: dependency-declaration -->
+<!-- endSnippet -->
 
 And in your target:
 
 <!-- snippet: dependency-use -->
+<!-- endSnippet -->
 
 ## About the Author
 
