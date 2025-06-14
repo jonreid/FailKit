@@ -190,7 +190,7 @@ You can now test your own test helpers — and TDD them, too.
 The `describe()` function formats values to improve test output:
 
 - **Optionals:** Removes `Optional(…)` wrapper
-- **Strings:** Adds quotes and escapes
+- **Strings:** Wraps in quotes and escapes special characters
 	- `\"` (quote)
 	- `\n`, `\r`, `\t` (newline, carriage return, tab)
 - **Other types:** Use default Swift description
