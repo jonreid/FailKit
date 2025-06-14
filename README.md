@@ -13,7 +13,7 @@ XCTest uses `XCTFail`. Swift Testing uses `Issue.record`. You can’t just call 
 
   * [Features](#features)
   * [Usage](#usage)
-    * [Fail.fail](#failfail)
+    * [`Fail.fail`](#failfail)
     * [Better Value Descriptions with `describe`](#better-value-descriptions-with-describe)
     * [Add a Distinguishing Message](#add-a-distinguishing-message)
     * [Test Your Custom Assertions](#test-your-custom-assertions)
