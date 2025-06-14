@@ -6,6 +6,9 @@ Most projects should include custom test assertions to make tests more expressiv
 
 But when you write custom test assertions, how can you support both XCTest and Swift Testing? You can write them twice (with different names). Or you can use FailKit.
 
+<!-- toc -->
+<!-- endToc -->
+
 ## Features
 
 - **Test Failures**: Report failures consistently across testing frameworks
