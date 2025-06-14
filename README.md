@@ -14,13 +14,14 @@ XCTest uses `XCTFail`. Swift Testing uses `Issue.record`. You can’t just call 
   * [Features](#features)
   * [Usage](#usage)
     * [Fail.fail](#failfail)
-    * [Describe Values](#describe-values)
+    * [Better Value Descriptions with `describe`](#better-value-descriptions-with-describe)
     * [Add a Distinguishing Message](#add-a-distinguishing-message)
-    * [Testing Your Assertion Helpers](#testing-your-assertion-helpers)
-  * [Describe Value Details](#describe-value-details)
-  * [How to Install](#how-to-install)
-    * [Swift Package Manager](#swift-package-manager)
-  * [Author](#author)<!-- endToc -->
+    * [Test Your Custom Assertions](#test-your-custom-assertions)
+      * [✅ Success Case (No Failure)](#-success-case-no-failure)
+      * [❌ Failure Case (Should Fail)](#-failure-case-should-fail)
+  * [`describe` Details](#describe-details)
+  * [Installation](#installation)
+  * [About the Author](#about-the-author)<!-- endToc -->
 
 ## Features
 
