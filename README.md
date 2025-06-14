@@ -191,7 +191,7 @@ The `describe()` function formats values to improve test output:
 
 - **Optionals:** Removes `Optional(…)` wrapper
 - **Strings:** Adds quotes and escapes
-	- `\\"` (quote)
+	- `\"` (quote)
 	- `\n`, `\r`, `\t` (newline, carriage return, tab)
 - **Other types:** Use default Swift description
 
