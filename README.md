@@ -194,6 +194,15 @@ The `describe()` function formats values to improve test output:
 	- `\n`, `\r`, `\t` (newline, carriage return, tab)
 - **Other types:** Use default Swift description
 
+## 💡 See a Working Example
+
+Check out the [Demo folder](https://github.com/jonreid/FailKit/tree/main/Demo) to see:
+
+- A real custom assertion built using FailKit
+- How to test that assertion using `FailSpy`
+
+It’s a complete, working example you can use as a starting point for your own helpers.
+
 ## Installation
 
 Use Swift Package Manager:
