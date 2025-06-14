@@ -1,10 +1,6 @@
 # FailKit
 
 [![Build](https://github.com/jonreid/FailKit/actions/workflows/build.yml/badge.svg)](https://github.com/jonreid/FailKit/actions/workflows/build.yml)
-[![Bluesky](https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff)](https://bsky.app/profile/qualitycoding.org)
-[![Mastodon](https://img.shields.io/mastodon/follow/109765011064804734?domain=https%3A%2F%2Fiosdev.space
-)](https://iosdev.space/@qcoding)
-[![YouTube](https://img.shields.io/youtube/channel/subscribers/UC69XtVGLRydpG7o1nkdQs8Q)](https://www.youtube.com/@QualityCoding)
 
 Most projects should include custom test assertions to make tests more expressive and easier to write.
 
@@ -17,7 +13,7 @@ But when you write custom test assertions, how can you support both XCTest and S
   - Includes source location information
 
 - **Value Description**: Format values to make failure messages easier to read
-  - Optional values are described without the `Optional(...)` wrapper
+  - Optional values are described without the `Optional(…)` wrapper
   - Strings are quoted and show escaped special characters
 
 - **Test Your Assertions**: Test your assertion helpers with `FailSpy`
@@ -79,7 +75,7 @@ In our example, the message is
 
 It converts the `expected` and `actual` values into strings. Here are some examples of different string conversions, depending on the original type:
 
-| Type   | Output                                        |
+| Type   | Swift conversion                              |
 | ------ | --------------------------------------------- |
 | Int    | Expected 123, but was 456                     |
 | Int?   | Expected Optional(123), but was Optional(456) |
@@ -95,47 +91,149 @@ We can improve value descriptions in test messages by calling FailKit’s `descr
 "Expected \(describe(expected)), but was \(describe(actual))"
 ```
 
-| Type   | Output                            |
-| ------ | --------------------------------- |
-| Int    | Expected 123, but was 456         |
-| Int?   | Expected 123, but was 456         |
-| String | Expected "ab cd", but was "de fg" |
+| Type   | Swift conversion                              | FailKit describe()                |
+| ------ | --------------------------------------------- | --------------------------------- |
+| Int    | Expected 123, but was 456                     | Expected 123, but was 456         |
+| Int?   | Expected Optional(123), but was Optional(456) | Expected 123, but was 456         |
+| String | Expected ab cd, but was de fg                 | Expected "ab cd", but was "de fg" |
 
 A string with a tab will look like `"ab\tcd"`, just as we’d write it in a string literal. Now we can distinguish special characters from spaces.
 
 ### Add a Distinguishing Message
 
+When a test has multiple assertions, it’s often helpful to add a distinguishing message. This helps us identify the point of failure even from raw console output, as you get from a build server.
+
+To separate this distinguishing message from the main message, use FailKit’s `messageSuffix` function. First, add a `String` parameter with a default value of empty string:
+
+```swift
+func assertEqual<T: Equatable>(
+    _ actual: T,
+    expected: T,
+    message: String = "", // 👈 like this
+    fileID: String = #fileID,
+    filePath: StaticString = #filePath,
+    line: UInt = #line,
+    column: UInt = #column
+)
+```
+
+Concatenate `messageSuffix(message)` to your failure message:
+
+```swift
+"Expected \(expected), but was \(actual)" + messageSuffix(message)
+```
+
+When the distinguishing message is non-empty, `messageSuffix` adds a separator. So for this assertion,
+
+```swift
+let result = 6 * 9
+assertEqual(result, 42, "answer to the ultimate question")
+```
+
+the output will be,
+
+> Expected 42, but was 54 - answer to the ultimate question
 
 
 ### Testing Your Assertion Helpers
 
-```swift
-func assertEqual<T: Equatable>(_ actual: T, _ expected: T, failure: any Failing = Fail()) {
-    if actual != expected {
-        failure.fail(
-            message: "Expected \(describe(expected)) but got \(describe(actual))",
-            location: SourceLocation(fileID: #fileID, filePath: #filePath, line: #line, column: #column)
-        )
-    }
-}
+Finally, what if you want to release your assertion helper in its own module? It should have its own tests. How do you test:
 
-// In your tests
-func testAssertEqual() {
-    let spy = FailSpy()
-    assertEqual(0, 42, failure: spy)
-    #expect(spy.callCount == 1)
-    #expect(spy.messages.first == "Expected 42 but got 0")
+- when it succeeds?
+- when it fails?
+- different failure messages it reports?
+
+To do that, add an `any Failing` parameter with `Fail()` as the default value.
+
+```swift
+func assertEqual<T: Equatable>(
+    _ actual: T,
+    expected: T,
+    message: String = "",
+    fileID: String = #fileID,
+    filePath: StaticString = #filePath,
+    line: UInt = #line,
+    column: UInt = #column,
+    failure: any Failing = Fail() // 👈 like this
+)
+```
+
+In the body of your assertion, replace the call to `Fail.fail` with `failure.fail`:
+
+```swift
+failure.fail( // 👈 like this
+    message: "Expected \(describe(expected)), but was \(describe(actual))" + messageSuffix(message),
+    location: SourceLocation(fileID: fileID, filePath: filePath, line: line, column: column)
+)
+```
+
+To test this, create a `FailSpy` and inject it. To test a passing scenario, the spy’s `callCount` should be 0.
+
+```swift
+@Test
+func equal() async throws {
+    let failSpy = FailSpy()
+    
+    assertEqual(1, expected: 1, failure: failSpy)
+
+    #expect(failSpy.callCount == 0)
 }
 ```
 
-## Installation
+To test a failing scenario, confirm that the `callCount` is 1 and check the first value in `messages`.
+
+```swift
+@Test
+func mismatch() async throws {
+    let failSpy = FailSpy()
+
+    assertEqual(2, expected: 1, failure: failSpy)
+
+    #expect(failSpy.callCount == 1)
+    #expect(failSpy.messages.first == "Expected 1, but was 2")
+}
+```
+
+With this knowledge, you can now TDD your custom assertions!
+
+## Describe Value Details
+
+FailKit’s `describe` function converts values for ease of reading in test failures.
+
+If the value is optional, it removes the `Optional(…)` wrapper.
+
+If the value is a string, it’s shown in double quotes with the following characters represented as escaped special characters:
+
+- \\" (double quotation mark)
+- \n (line feed)
+- \r (carriage return)
+- \t (horizontal tab)
+
+Other types of values use normal Swift conversion.
+
+## How to Install
 
 ### Swift Package Manager
 
-Add FailKit to your `Package.swift`:
+If you have a `Package.swift` file, declare the following dependency:
 
 ```swift
 dependencies: [
     .package(url: "https://github.com/jonreid/FailKit.git", from: "1.0.0")
 ]
 ```
+
+Then add it to the appropriate target:
+
+```swift
+dependencies: ["FailKit"]
+```
+
+## Author
+
+Jon Reid is the author of _[iOS Unit Testing by Example](https://iosunittestingbyexample.com)._ His website is [Quality Coding](https://qualitycoding.org).
+
+[![Bluesky](https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff)](https://bsky.app/profile/qualitycoding.org)
+[![Mastodon](https://img.shields.io/mastodon/follow/109765011064804734?domain=https%3A%2F%2Fiosdev.space
+)](https://iosdev.space/@qcoding)
+[![YouTube](https://img.shields.io/youtube/channel/subscribers/UC69XtVGLRydpG7o1nkdQs8Q)](https://www.youtube.com/@QualityCoding)
