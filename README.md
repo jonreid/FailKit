@@ -25,12 +25,10 @@ XCTest uses `XCTFail`. Swift Testing uses `Issue.record`. You can’t just call 
 
 ## Features
 
-- **Unified Failure Reporting
-**:  
+- **Unified Failure Reporting**:  
 Works with **XCTest** and **Swift Testing,** including source location.
 
-- **Cleaner Value Descriptions
-**:  
+- **Cleaner Value Descriptions**:  
 Optional values without `Optional(…)`; strings quoted and escaped.
 
 - **Assertion Testing**:  
@@ -38,7 +36,7 @@ Use `FailSpy` to test your custom assertions: did they fail, and how?
 
 ## Usage
 
-### Fail.fail
+### `Fail.fail`
 
 Let’s say we want a custom equality assertion that’s clearer than `XCTestAssertEqual`:
 
