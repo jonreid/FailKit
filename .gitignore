@@ -1,3 +1,6 @@
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+
 # Created by https://www.toptal.com/developers/gitignore/api/swiftpackagemanager
 # Edit at https://www.toptal.com/developers/gitignore?templates=swiftpackagemanager
 
