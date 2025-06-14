@@ -230,7 +230,7 @@ dependencies: ["FailKit"]
 
 ## About the Author
 
-Jon Reid is the author of _[iOS Unit Testing by Example](https://iosunittestingbyexample.com).  
+Jon Reid is the author of _[iOS Unit Testing by Example](https://iosunittestingbyexample.com)._  
 Find more at [Quality Coding](https://qualitycoding.org).
 
 [![Bluesky](https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff)](https://bsky.app/profile/qualitycoding.org)
