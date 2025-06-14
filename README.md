@@ -197,7 +197,7 @@ The `describe()` function formats values to improve test output:
 
 ## 💡 See a Working Example
 
-Check out the [Demo folder](https://github.com/jonreid/FailKit/tree/main/Demo) to see:
+Check out the [**Demo** folder](https://github.com/jonreid/FailKit/tree/main/Demo) to see:
 
 - A real custom assertion built using FailKit
 - How to test that assertion using `FailSpy`
