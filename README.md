@@ -1,6 +1,8 @@
 # FailKit
 
 [![Build](https://github.com/jonreid/FailKit/actions/workflows/build.yml/badge.svg)](https://github.com/jonreid/FailKit/actions/workflows/build.yml)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjonreid%2FFailKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/jonreid/FailKit)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjonreid%2FFailKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/jonreid/FailKit)
 
 Writing custom test assertions makes your tests more expressive and easier to maintain.
 
