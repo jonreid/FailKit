@@ -1,15 +1,14 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FailKit",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v12),
-        .tvOS(.v15),
-        .watchOS(.v8),
-        .visionOS(.v1)
+        .iOS(.v10),
+        .macOS(.v10_12),
+        .tvOS(.v10),
+        .watchOS(.v3)
     ],
     products: [
         .library(
