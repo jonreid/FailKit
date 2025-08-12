@@ -10,17 +10,17 @@ let package = Package(
             targets: ["Demo"]
         ),
     ],
-// begin-snippet: dependency-declaration
+    // begin-snippet: dependency-declaration
     dependencies: [
         .package(url: "https://github.com/jonreid/FailKit.git", from: "1.0.0"),
     ],
-// end-snippet
+    // end-snippet
     targets: [
         .target(
             name: "Demo",
-// begin-snippet: dependency-use
+            // begin-snippet: dependency-use
             dependencies: ["FailKit"]
-// end-snippet
+            // end-snippet
         ),
         .testTarget(
             name: "DemoTests",

@@ -6,7 +6,7 @@ final class StringDescriber: Describer, @unchecked Sendable {
     override func willHandle(_ value: Any) -> Bool {
         value is String
     }
-    
+
     override func describe(_ value: Any) -> String {
         toFormattedString(value as! String)
     }

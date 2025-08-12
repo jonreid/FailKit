@@ -8,7 +8,7 @@
 /// Strings are quoted, escaping special characters.
 /// Optional values are described without the `Optional(...)` wrapper.
 public func describe(_ value: Any) -> String {
-    return DescriberChain.head.handle(value)
+    DescriberChain.head.handle(value)
 }
 
 /// Manage chain-of-responsibility for describing values.

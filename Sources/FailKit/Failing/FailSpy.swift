@@ -18,7 +18,7 @@ public final class FailSpy: Failing {
 
     public func fail(message: String, location: SourceLocation) {
         callCount += 1
-        self.messages.append(message)
-        self.locations.append(location)
+        messages.append(message)
+        locations.append(location)
     }
 }

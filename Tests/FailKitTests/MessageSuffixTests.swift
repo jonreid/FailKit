@@ -10,7 +10,7 @@ final class MessageSuffixTests: @unchecked Sendable {
     func emptyMessage() throws {
         #expect(messageSuffix("") == "")
     }
-    
+
     @Test
     func addsSeparator() throws {
         #expect(messageSuffix("message") == " - message")

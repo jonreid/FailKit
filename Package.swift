@@ -8,12 +8,13 @@ let package = Package(
         .iOS(.v10),
         .macOS(.v10_12),
         .tvOS(.v10),
-        .watchOS(.v3)
+        .watchOS(.v3),
     ],
     products: [
         .library(
             name: "FailKit",
-            targets: ["FailKit"]),
+            targets: ["FailKit"],
+        ),
     ],
     targets: [
         .target(
