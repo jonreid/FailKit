@@ -78,6 +78,9 @@ func assertEqual<T: Equatable>(
 
 `Fail.fail` automatically routes to the appropriate testing framework.
 
+> **Swift Testing: call assertions on the test’s task.**
+> FailKit detects Swift Testing through `Test.current`, which child tasks inherit but detached tasks, GCD queues, and threads don’t. Calling a FailKit assertion from those contexts falls back to `XCTFail`, so the failure isn’t attributed to your test. When migrating XCTest code that asserts inside completion handlers, resume a continuation with the value instead, then assert after `await`.
+
 ### Better Value Descriptions with `describe`
 
 Consider this failure message:
